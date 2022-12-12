@@ -1,7 +1,6 @@
 package fileio;
 
 import java.util.ArrayList;
-
 public class Input {
     private ArrayList<UsersInput> users;
     private ArrayList<MoviesInput> movies;

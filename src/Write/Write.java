@@ -44,16 +44,36 @@ public class Write {
 
         if (currentMoviesList != null) {
             for (int i = 0; i < currentMoviesList.size(); i++) {
-                movies.add(currentMoviesList.get(i).getName());
-                movies.add(currentMoviesList.get(i).getYear());
-                movies.add(currentMoviesList.get(i).getDuration());
-                movies.add(currentMoviesList.get(i).getGenres().toString());
-                movies.add(currentMoviesList.get(i).getActors().toString());
-                movies.add(currentMoviesList.get(i).getCountriesBanned().toString());
-                movies.add(currentMoviesList.get(i).getCountriesBanned().toString());
+                ObjectNode movie = objectMapper.createObjectNode();
+
+                movie.put("name", currentMoviesList.get(i).getName());
+                movie.put("year", currentMoviesList.get(i).getYear());
+                movie.put("duration", currentMoviesList.get(i).getDuration());
+
+                ArrayNode genres = objectMapper.createArrayNode();
+                for (int j = 0; j < currentMoviesList.get(i).getGenres().size(); j++) {
+                    genres.add(currentMoviesList.get(i).getGenres().get(j));
+                }
+                movie.set("genres", genres);
+
+                ArrayNode actors = objectMapper.createArrayNode();
+                for (int j = 0; j < currentMoviesList.get(i).getActors().size(); j++) {
+                    actors.add(currentMoviesList.get(i).getActors().get(j));
+                }
+                movie.set("actors", actors);
+
+                ArrayNode countriesBanned = objectMapper.createArrayNode();
+                for (int j = 0; j < currentMoviesList.get(i).getCountriesBanned().size(); j++) {
+                    countriesBanned.add(currentMoviesList.get(i).getCountriesBanned().get(j));
+                }
+                movie.set("countriesBanned", countriesBanned);
+                movie.put("numLikes", currentMoviesList.get(i).getNumLikes());
+                movie.put("numRatings", currentMoviesList.get(i).getNumRatings());
+                movie.put("rating", currentMoviesList.get(i).getRating());
+
+                movies.add(movie);
             }
         }
-
 
         return movies;
     }
@@ -62,6 +82,7 @@ public class Write {
         ObjectNode user = objectMapper.createObjectNode();
 
         ObjectNode credentials = objectMapper.createObjectNode();
+
         credentials.put("name", currentUser.getCredentials().getName());
         credentials.put("password", currentUser.getCredentials().getPassword());
         credentials.put("accountType", currentUser.getCredentials().getAccountType());
@@ -89,6 +110,122 @@ public class Write {
         user.set("ratedMovies", ratedMovies);
 
         return user;
+    }
+
+    public static void writeMoviesError(ArrayList<MoviesInput> movies, ActionsInput action, UsersInput currentUser, ArrayNode output) {
+        ObjectNode loginError = objectMapper.createObjectNode();
+
+        loginError.put("error", action.getError());
+
+        MoviesInput movie = new MoviesInput();
+        ArrayList<MoviesInput> allowedMovies = movie.allowedMoviesForASpecificUser(movies, currentUser);
+
+        if (currentUser != null) {
+            ArrayNode movieList = movieList(allowedMovies);
+            loginError.set("currentMoviesList", movieList);
+        } else {
+            ArrayNode movieList = movieList(new ArrayList<>());
+            loginError.set("currentMoviesList", movieList);
+        }
+
+        ObjectNode user = objectMapper.createObjectNode();
+        if (currentUser != null) {
+            user = user(currentUser);
+            loginError.set("currentUser", user);
+        } else {
+            loginError.set("currentUser", null);
+        }
+
+        output.add(loginError);
+    }
+
+    public static void writeSearchError(ArrayList<MoviesInput> movies, ActionsInput action, UsersInput currentUser, ArrayNode output) {
+        ObjectNode loginError = objectMapper.createObjectNode();
+
+        loginError.put("error", action.getError());
+
+        ArrayNode moviesOutput = movieList(movies);
+        for (int i = 0; i < moviesOutput.size(); i++) {
+            if (!moviesOutput.get(i).getNodeType().name().startsWith(action.getStartsWith())) {
+                moviesOutput.remove(i);
+                i--;
+            }
+        }
+        loginError.set("currentMoviesList", moviesOutput);
+
+        ObjectNode user = objectMapper.createObjectNode();
+        if (currentUser != null) {
+            user = user(currentUser);
+            loginError.set("currentUser", user);
+        } else {
+            loginError.set("currentUser", null);
+        }
+
+        output.add(loginError);
+    }
+
+    public static void writeFilter(ArrayList<MoviesInput> movies, UsersInput currentUser, ActionsInput action, ArrayNode output) {
+        ObjectNode loginError = objectMapper.createObjectNode();
+
+        loginError.put("error", action.getError());
+
+        ArrayNode moviesOutput = movieList(movies);
+        loginError.set("currentMoviesList", moviesOutput);
+
+        ObjectNode user = objectMapper.createObjectNode();
+        if (currentUser != null) {
+            user = user(currentUser);
+            loginError.set("currentUser", user);
+        } else {
+            loginError.set("currentUser", null);
+        }
+
+        output.add(loginError);
+    }
+
+    public static void writeFilmDetails(UsersInput currentUser, MoviesInput movie, ActionsInput action, ArrayNode output) {
+        ObjectNode loginError = objectMapper.createObjectNode();
+
+        loginError.put("error", action.getError());
+
+        ObjectNode movieDetails = objectMapper.createObjectNode();
+        movieDetails.put("name", movie.getName());
+        movieDetails.put("year", movie.getYear());
+        movieDetails.put("duration", movie.getDuration());
+
+        ArrayNode genres = objectMapper.createArrayNode();
+        for (int j = 0; j < movie.getGenres().size(); j++) {
+            genres.add(movie.getGenres().get(j));
+        }
+        movieDetails.set("genres", genres);
+
+        ArrayNode actors = objectMapper.createArrayNode();
+        for (int j = 0; j < movie.getActors().size(); j++) {
+            actors.add(movie.getActors().get(j));
+        }
+        movieDetails.set("actors", actors);
+
+        ArrayNode countriesBanned = objectMapper.createArrayNode();
+        for (int j = 0; j < movie.getCountriesBanned().size(); j++) {
+            countriesBanned.add(movie.getCountriesBanned().get(j));
+        }
+        movieDetails.set("countriesBanned", countriesBanned);
+
+        movieDetails.put("numLikes", movie.getNumLikes());
+        movieDetails.put("numRatings", movie.getNumRatings());
+        movieDetails.put("rating", movie.getRating());
+
+        loginError.set("details", movieDetails);
+
+        ObjectNode user = objectMapper.createObjectNode();
+        if (currentUser != null) {
+            user = user(currentUser);
+            loginError.set("currentUser", user);
+        } else {
+            loginError.set("currentUser", null);
+        }
+
+        output.add(loginError);
     }
 }
 

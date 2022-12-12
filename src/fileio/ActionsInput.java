@@ -8,6 +8,12 @@ public class ActionsInput {
     private String page;
     private CredentialsInput credentials;
     private String error;
+    private String startsWith;
+    private String movie;
+    private Filters filters;
+
+    private String objectType;
+    private String count;
 
     public ActionsInput() {
     }
@@ -52,6 +58,45 @@ public class ActionsInput {
         this.error = error;
     }
 
+    public String getStartsWith() {
+        return startsWith;
+    }
+
+    public void setStartsWith(String startsWith) {
+        this.startsWith = startsWith;
+    }
+
+    public Filters getFilters() {
+        return filters;
+    }
+
+    public void setFilters(Filters filters) {
+        this.filters = filters;
+    }
+
+    public String getMovie() {
+        return movie;
+    }
+
+    public void setMovie(String movie) {
+        this.movie = movie;
+    }
+
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
+    }
+
+    public String getObjectType() {
+        return objectType;
+    }
+
+    public void setObjectType(String objectType) {
+        this.objectType = objectType;
+    }
     @Override
     public String toString() {
         return "ActionsInput{"

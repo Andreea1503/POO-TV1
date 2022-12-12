@@ -14,6 +14,7 @@ public class UsersInput {
     private ArrayList<MoviesInput> likedMovies = null;
     private ArrayList<MoviesInput> ratedMovies = null;
     private ArrayList<MoviesInput> currentMoviesList = null;
+
     public UsersInput() {
     }
 

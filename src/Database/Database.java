@@ -25,16 +25,14 @@ public class Database {
         return result;
     }
 
-    public void databaseNavigation(ArrayList<ActionsInput> actions, ArrayList<UsersInput> users, ArrayNode output) {
+    public void databaseNavigation(ArrayList<ActionsInput> actions, ArrayList<UsersInput> users, ArrayList<MoviesInput> movies, ArrayNode output) {
         Page currentPage = new Page("Homepage neautentificat");
-
-        UsersInput currentUser = null;
 
         for (ActionsInput action : actions) {
             action.setError(null);
             switch(action.getType()) {
-                case "on page" -> currentPage.onPageAction(users, action, currentPage, currentUser, output);
-                case "change page" -> currentPage.changePageAction(action, currentPage, currentUser, output);
+                case "on page" -> currentPage.onPageAction(users, action, currentPage, movies, output);
+                case "change page" -> currentPage.changePageAction(action, currentPage, movies, output);
             }
         }
     }
