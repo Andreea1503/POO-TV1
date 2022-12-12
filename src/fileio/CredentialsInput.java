@@ -5,7 +5,7 @@ public class CredentialsInput {
     private String password;
     private String accountType;
     private String country;
-    private int balance;
+    private String balance;
 
     public CredentialsInput() {
     }
@@ -42,11 +42,11 @@ public class CredentialsInput {
         this.country = country;
     }
 
-    public int getBalance() {
+    public String getBalance() {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(String balance) {
         this.balance = balance;
     }
 

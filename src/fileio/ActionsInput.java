@@ -6,7 +6,8 @@ public class ActionsInput {
     private String feature;
     private String type;
     private String page;
-    private UserCredentials credentials;
+    private CredentialsInput credentials;
+    private String error;
 
     public ActionsInput() {
     }
@@ -35,12 +36,20 @@ public class ActionsInput {
         this.page = page;
     }
 
-    public UserCredentials getCredentials() {
+    public CredentialsInput getCredentials() {
         return credentials;
     }
 
-    public void setCredentials(UserCredentials credentials) {
+    public void setCredentials(CredentialsInput credentials) {
         this.credentials = credentials;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @Override

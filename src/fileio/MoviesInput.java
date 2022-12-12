@@ -2,6 +2,9 @@ package fileio;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MoviesInput {
     private String name;
     private int year;
@@ -9,7 +12,6 @@ public class MoviesInput {
     private ArrayList<String> genres;
     private ArrayList<String> actors;
     private ArrayList<String> countriesBanned;
-
     public MoviesInput() {
     }
 
