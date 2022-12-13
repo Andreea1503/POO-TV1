@@ -15,6 +15,8 @@ public class ActionsInput {
     private String objectType;
     private String count;
 
+    private int rate;
+
     public ActionsInput() {
     }
 
@@ -96,6 +98,14 @@ public class ActionsInput {
 
     public void setObjectType(String objectType) {
         this.objectType = objectType;
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
     }
     @Override
     public String toString() {

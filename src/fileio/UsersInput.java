@@ -91,7 +91,6 @@ public class UsersInput {
     public void setCurrentMoviesList(ArrayList<MoviesInput> currentMoviesList) {
         this.currentMoviesList = currentMoviesList;
     }
-
     @Override
     public String toString() {
         return "UsersInput{"

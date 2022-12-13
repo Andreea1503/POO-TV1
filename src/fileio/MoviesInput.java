@@ -18,12 +18,13 @@ public class MoviesInput {
     private int numLikes;
 
     private int numRatings;
-
     private Double rating;
+    private ArrayList<Integer> movieRatings = null;
     public MoviesInput() {
         this.numLikes = 0;
         this.numRatings = 0;
         this.rating = 0.0;
+        this.movieRatings = new ArrayList<>();
     }
 
     public String getName() {
@@ -113,13 +114,25 @@ public class MoviesInput {
         return filteredMovies;
     }
 
-    public MoviesInput isPurchased(ArrayList<MoviesInput> purchasedMovies, String movie) {
+    public MoviesInput isInList(ArrayList<MoviesInput> purchasedMovies, String movie) {
         for (MoviesInput purchasedMovie : purchasedMovies) {
             if (purchasedMovie.getName().equals(movie)) {
                 return purchasedMovie;
             }
         }
         return null;
+    }
+
+    public Double rating(MoviesInput movie) {
+        if (movie.getNumRatings() > 0) {
+            Integer rating = 0;
+            for (Integer userRating : movie.getMovieRatings()) {
+                rating += userRating;
+            }
+
+            return (double) rating / movie.getNumRatings();
+        }
+        return 0.0;
     }
     public int getNumLikes() {
         return numLikes;
@@ -143,6 +156,14 @@ public class MoviesInput {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public ArrayList<Integer> getMovieRatings() {
+        return movieRatings;
+    }
+
+    public void setMovieRatings(ArrayList<Integer> movieRatings) {
+        this.movieRatings = movieRatings;
     }
     @Override
     public String toString() {

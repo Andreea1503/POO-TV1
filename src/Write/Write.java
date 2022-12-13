@@ -213,6 +213,8 @@ public class Write {
 
         movieDetails.put("numLikes", movie.getNumLikes());
         movieDetails.put("numRatings", movie.getNumRatings());
+        MoviesInput moviesRating = new MoviesInput();
+        movie.setRating(moviesRating.rating(movie));
         movieDetails.put("rating", movie.getRating());
 
         loginError.set("details", movieDetails);
