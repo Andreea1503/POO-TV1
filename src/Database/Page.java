@@ -2,6 +2,8 @@ package Database;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.util.ArrayList;
+import java.util.Collections;
+
 import Write.*;
 import fileio.*;
 public class Page {
@@ -55,7 +57,7 @@ public class Page {
                 buyPremiumAccount(action, currentPage, output);
             }
             case "purchase" -> {
-                purchase(action, currentPage, output, movies);
+                purchase(action, currentPage, output);
             }
             case "watch" -> {
                 watch(action, currentPage, output);
@@ -76,7 +78,6 @@ public class Page {
                     currentPage.setCurrentPageName("login");
                 } else {
                     action.setError("Error");
-                    currentPage.setCurrentUser(null);
                     Write.writePageError(null, action, output);
                 }
             }
@@ -85,37 +86,40 @@ public class Page {
                     currentPage.setCurrentPageName("register");
                 } else {
                     action.setError("Error");
-                    currentPage.setCurrentUser(null);
-                    Write.writeMoviesError(movies, action, currentPage.getCurrentUser(), output);
+                    Write.writeMoviesError(movies, action, null, output);
                 }
             }
             case "movies" -> {
-                if (currentPage.getCurrentPageName().equals("Homepage autentificat") || currentPage.getCurrentPageName().equals("see details")
-                    || currentPage.getCurrentPageName().equals("upgrades")) {
+                if ((currentPage.getCurrentPageName().equals("Homepage autentificat") || currentPage.getCurrentPageName().equals("see details")
+                    || currentPage.getCurrentPageName().equals("upgrades")) && currentPage.getCurrentUser() != null) {
                     currentPage.setCurrentPageName("movies");
                     action.setError(null);
+                    MoviesInput movie = new MoviesInput();
+                    currentPage.getCurrentUser().setCurrentMoviesList(movie.allowedMoviesForASpecificUser(movies, currentPage.getCurrentUser()));
                     Write.writeMoviesError(movies, action, currentPage.getCurrentUser(), output);
                 } else {
                     action.setError("Error");
-                    currentPage.setCurrentUser(null);
-                    Write.writePageError(currentPage.getCurrentUser(), action, output);
+                    Write.writePageError(null, action, output);
                 }
             }
             case "see details" -> {
                 if (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("see details")) {
                     currentPage.setCurrentPageName("see details");
-                    MoviesInput movie = seeDetails(action, currentPage, output, movies);
-                    if (movie != null) {
-                        Write.writeFilmDetails(currentPage.getCurrentUser(), movie, action, output);
+                    MoviesInput movie = new MoviesInput();
+                    ArrayList<MoviesInput> allowedMovies = movie.allowedMoviesForASpecificUser(movies, currentPage.getCurrentUser());
+                    MoviesInput allowedMovie = seeDetails(action, currentPage, output, allowedMovies);
+                    currentPage.getCurrentUser().setCurrentMoviesList(new ArrayList<>());
+                    currentPage.getCurrentUser().getCurrentMoviesList().add(allowedMovie);
+
+                    if (allowedMovie != null) {
+                        Write.writeFilmDetails(currentPage.getCurrentUser(), allowedMovie, action, output);
                     } else {
                         action.setError("Error");
-                        currentPage.setCurrentUser(null);
-                        Write.writePageError(currentPage.getCurrentUser(), action, output);
+                        Write.writePageError(null, action, output);
                     }
                 } else {
                     action.setError("Error");
-                    currentPage.setCurrentUser(null);
-                    Write.writePageError(currentPage.getCurrentUser(), action, output);
+                    Write.writePageError(null, action, output);
                 }
             }
             case "upgrades" -> {
@@ -123,15 +127,19 @@ public class Page {
                     currentPage.setCurrentPageName("upgrades");
                 } else {
                     action.setError("Error");
-                    currentPage.setCurrentUser(null);
-                    Write.writePageError(currentPage.getCurrentUser(), action, output);
+                    Write.writePageError(null, action, output);
                 }
             }
             case "logout" -> {
-                currentPage.setCurrentPageName("Homepage neautentificat");
-                currentPage.setCurrentUser(null);
+                if (currentPage.getCurrentPageName().equals("login") || currentPage.getCurrentPageName().equals("register")
+                    || currentPage.getCurrentPageName().equals("Homepage neautentificat")) {
+                    action.setError("Error");
+                    Write.writePageError(null, action, output);
+                } else {
+                    currentPage.setCurrentPageName("Homepage neautentificat");
+                    currentPage.setCurrentUser(null);
+                }
             }
-
         }
     }
 
@@ -151,15 +159,12 @@ public class Page {
 
             if (!found) {
                 action.setError("Error");
-                currentPage.setCurrentUser(null);
                 currentPage.setCurrentPageName("Homepage neautentificat");
-                Write.writePageError(currentPage.getCurrentUser(), action, output);
+                Write.writePageError(null, action, output);
             }
         } else {
             action.setError("Error");
-            currentPage.setCurrentPageName("Homepage neautentificat");
-            currentPage.setCurrentUser(null);
-            Write.writePageError(currentPage.getCurrentUser(), action, output);
+            Write.writePageError(null, action, output);
         }
     }
 
@@ -169,8 +174,7 @@ public class Page {
                 if (user.getCredentials().equals(action.getCredentials())) {
                     currentPage.setCurrentPageName("Homepage neautentificat");
                     action.setError("Error");
-                    currentPage.setCurrentUser(null);
-                    Write.writePageError(currentPage.getCurrentUser(), action, output);
+                    Write.writePageError(null, action, output);
                     return;
                 }
             }
@@ -182,9 +186,8 @@ public class Page {
             Write.writePageError(currentPage.getCurrentUser(),  action, output);
         } else {
             action.setError("Error");
-            currentPage.setCurrentUser(null);
             currentPage.setCurrentPageName("Homepage neautentificat");
-            Write.writePageError(currentPage.getCurrentUser(), action, output);
+            Write.writePageError(null, action, output);
         }
     }
 
@@ -194,8 +197,7 @@ public class Page {
             Write.writeSearchError(movies, action, currentPage.getCurrentUser(), output);
         } else {
             action.setError("Error");
-            currentPage.setCurrentUser(null);
-            Write.writeSearchError(movies,  action, currentPage.getCurrentUser(), output);
+            Write.writeSearchError(movies,  action, null, output);
         }
     }
 
@@ -204,18 +206,22 @@ public class Page {
             action.setError(null);
             MoviesInput movie = new MoviesInput();
             ArrayList<MoviesInput> filteredMovies = movie.filer(movies, currentPage.getCurrentUser(), action);
+            if (filteredMovies != null) {
+                currentPage.getCurrentUser().setCurrentMoviesList(filteredMovies);
+            }
             Write.writeFilter(filteredMovies, currentPage.getCurrentUser(), action, output);
         } else {
             action.setError("Error");
-            currentPage.setCurrentUser(null);
-            Write.writePageError(currentPage.getCurrentUser(), action, output);
+            Write.writePageError(null, action, output);
         }
     }
 
     public MoviesInput seeDetails(ActionsInput action, Page currentPage, ArrayNode output, ArrayList<MoviesInput> movies) {
         for (MoviesInput movie : movies) {
-            if (action.getMovie().equals(movie)) {
-                return movie;
+            if (movie != null) {
+                if (action.getMovie().equals(movie.getName())) {
+                    return movie;
+                }
             }
         }
         return null;
@@ -230,8 +236,7 @@ public class Page {
             currentPage.getCurrentUser().setTokensCount(Integer.valueOf(action.getCount()));
         } else {
             action.setError("Error");
-            currentPage.setCurrentUser(null);
-            Write.writePageError(currentPage.getCurrentUser(), action, output);
+            Write.writePageError(null, action, output);
         }
     }
 
@@ -241,90 +246,111 @@ public class Page {
             currentPage.getCurrentUser().getCredentials().setAccountType("premium");
         } else {
             action.setError("Error");
-            currentPage.setCurrentUser(null);
-            Write.writePageError(currentPage.getCurrentUser(), action, output);
+            Write.writePageError(null, action, output);
         }
     }
 
-    public void purchase(ActionsInput action, Page currentPage, ArrayNode output, ArrayList<MoviesInput> movies) {
-        if (currentPage.getCurrentUser() != null && currentPage.getCurrentUser().getCredentials().getAccountType().equals("premium")) {
-            purchaseMovieOnAPremiumAccount(action, currentPage, output, movies);
-        } else if (currentPage.getCurrentUser() != null && currentPage.getCurrentUser().getCredentials().getAccountType().equals("standard")) {
-            purchaseMovie(action, currentPage, output, movies);
-        }
-    }
-
-    public void purchaseMovieOnAPremiumAccount(ActionsInput action, Page currentPage, ArrayNode output, ArrayList<MoviesInput> movies) {
-        if (currentPage.getCurrentUser().getNumFreePremiumVideos() > 0) {
-            currentPage.getCurrentUser().setNumFreePremiumVideos(currentPage.getCurrentUser().getNumFreePremiumVideos() - 1);
-            // poate grupate sa nu mai fie asa multe linii
-            MoviesInput purchasedMovie = seeDetails(action, currentPage, output, movies);
-            currentPage.getCurrentUser().getPurchasedMovies().add(purchasedMovie);
+    public void purchase(ActionsInput action, Page currentPage, ArrayNode output) {
+        if (currentPage.getCurrentUser().getCurrentMoviesList().get(0) != null && currentPage.getCurrentPageName().equals("see details")) {
+            MoviesInput purchasedMovies = purchaseMovieOnAccount(action, currentPage, output);
+            if (purchasedMovies != null) {
+                Write.writeFilmDetails(currentPage.getCurrentUser(), purchasedMovies, action, output);
+            } else {
+                action.setError("Error");
+                Write.writePageError(null, action, output);
+            }
         } else {
-            purchaseMovie(action, currentPage, output, movies);
+            action.setError("Error");
+            Write.writePageError(null, action, output);
         }
     }
 
-    public void purchaseMovie(ActionsInput action, Page currentPage, ArrayNode output, ArrayList<MoviesInput> movies) {
-        currentPage.getCurrentUser().setTokensCount(currentPage.getCurrentUser().getTokensCount() - 10);
-        MoviesInput purchasedMovie = seeDetails(action, currentPage, output, movies);
-        currentPage.getCurrentUser().getPurchasedMovies().add(purchasedMovie);
+    public MoviesInput purchaseMovieOnAccount(ActionsInput action, Page currentPage, ArrayNode output) {
+        MoviesInput purchasedMovie = currentPage.getCurrentUser().getCurrentMoviesList().get(0);
+        if (currentPage.getCurrentUser().getCredentials().getAccountType().equals("premium") && currentPage.getCurrentUser().getNumFreePremiumVideos() > 0) {
+            currentPage.getCurrentUser().setNumFreePremiumVideos(currentPage.getCurrentUser().getNumFreePremiumVideos() - 1);
+            currentPage.getCurrentUser().getPurchasedMovies().add(purchasedMovie);
+        } else if (currentPage.getCurrentUser().getCredentials().getAccountType().equals("standard") || currentPage.getCurrentUser().getNumFreePremiumVideos() == 0) {
+            currentPage.getCurrentUser().setTokensCount(currentPage.getCurrentUser().getTokensCount() - 2);
+            currentPage.getCurrentUser().getPurchasedMovies().add(purchasedMovie);
+        }
+        return purchasedMovie;
     }
 
     public void watch(ActionsInput action, Page currentPage, ArrayNode output) {
-        MoviesInput movie = new MoviesInput();
         if (currentPage.getCurrentUser() != null) {
-            MoviesInput purchasedMovie = movie.isInList(currentPage.getCurrentUser().getPurchasedMovies(), action.getMovie());
+            MoviesInput purchasedMovie = currentPage.getCurrentUser().getCurrentMoviesList().get(0);
 
-            if (purchasedMovie != null && (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("upgrades")
-                    || currentPage.getCurrentPageName().equals("Homepage autentificat"))) {
+            if (purchasedMovie == null) {
+                action.setError("Error");
+                Write.writePageError(null, action, output);
+                return;
+            }
+
+            MoviesInput movie = new MoviesInput();
+            MoviesInput watchedMovie = movie.isInList(currentPage.getCurrentUser().getPurchasedMovies(), purchasedMovie.getName());
+
+            if (watchedMovie != null && (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("upgrades")
+                    || currentPage.getCurrentPageName().equals("Homepage autentificat") || currentPage.getCurrentPageName().equals("see details"))) {
                 action.setError(null);
-                currentPage.getCurrentUser().getWatchedMovies().add(purchasedMovie);
-                Write.writeFilmDetails(currentPage.getCurrentUser(), movie, action, output);
+                currentPage.getCurrentUser().getWatchedMovies().add(watchedMovie);
+                Write.writeFilmDetails(currentPage.getCurrentUser(), watchedMovie, action, output);
             } else {
                 action.setError("Error");
-                currentPage.setCurrentUser(null);
-                Write.writePageError(currentPage.getCurrentUser(), action, output);
+                Write.writePageError(null, action, output);
             }
         }
     }
 
     public void like(ActionsInput action, Page currentPage, ArrayNode output) {
-        MoviesInput movie = new MoviesInput();
-
         if (currentPage.getCurrentUser() != null) {
-            MoviesInput watchedMovie = movie.isInList(currentPage.getCurrentUser().getWatchedMovies(), action.getMovie());
+            MoviesInput watchedMovie = currentPage.getCurrentUser().getCurrentMoviesList().get(0);
 
-            if (watchedMovie != null && (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("upgrades")
-                    || currentPage.getCurrentPageName().equals("Homepage autentificat"))) {
+            if (watchedMovie == null) {
+                action.setError("Error");
+                Write.writePageError(null, action, output);
+                return;
+            }
+
+            MoviesInput movie = new MoviesInput();
+            MoviesInput likedMovie = movie.isInList(currentPage.getCurrentUser().getWatchedMovies(), watchedMovie.getName());
+
+
+            if (likedMovie != null && (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("upgrades")
+                    || currentPage.getCurrentPageName().equals("Homepage autentificat") || currentPage.getCurrentPageName().equals("see details"))) {
                 action.setError(null);
-                currentPage.getCurrentUser().getLikedMovies().add(watchedMovie);
-                watchedMovie.setNumLikes(watchedMovie.getNumLikes() + 1);
-                Write.writeFilmDetails(currentPage.getCurrentUser(), movie, action, output);
+                currentPage.getCurrentUser().getLikedMovies().add(likedMovie);
+                currentPage.getCurrentUser().getLikedMovies().get(currentPage.getCurrentUser().getLikedMovies().size() - 1).setNumLikes(currentPage.getCurrentUser().getLikedMovies().get(currentPage.getCurrentUser().getLikedMovies().size() - 1).getNumLikes() + 1);
+                Write.writeFilmDetails(currentPage.getCurrentUser(), currentPage.getCurrentUser().getLikedMovies().get(currentPage.getCurrentUser().getLikedMovies().size() - 1), action, output);
             } else {
                 action.setError("Error");
-                currentPage.setCurrentUser(null);
-                Write.writePageError(currentPage.getCurrentUser(), action, output);
+                Write.writePageError(null, action, output);
             }
         }
     }
 
     public void rate(ActionsInput action, Page currentPage, ArrayNode output) {
-        MoviesInput movie = new MoviesInput();
-
         if (currentPage.getCurrentUser() != null) {
-            MoviesInput watchedMovie = movie.isInList(currentPage.getCurrentUser().getWatchedMovies(), action.getMovie());
+            MoviesInput watchedMovie = currentPage.getCurrentUser().getCurrentMoviesList().get(0);
 
-            if (watchedMovie != null && (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("upgrades")
-                    || currentPage.getCurrentPageName().equals("Homepage autentificat"))) {
+            if (watchedMovie == null) {
+                action.setError("Error");
+                Write.writePageError(null, action, output);
+                return;
+            }
+            MoviesInput movie = new MoviesInput();
+            MoviesInput ratedMovie = movie.isInList(currentPage.getCurrentUser().getWatchedMovies(), watchedMovie.getName());
+
+            if (ratedMovie != null && (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("upgrades")
+                    || currentPage.getCurrentPageName().equals("Homepage autentificat") || currentPage.getCurrentPageName().equals("see details")) && action.getRate() <= 5) {
                 action.setError(null);
-                watchedMovie.setRating(watchedMovie.getRating() + 1);
-                watchedMovie.getMovieRatings().add(action.getRate());
-                Write.writeFilmDetails(currentPage.getCurrentUser(), movie, action, output);
+                currentPage.getCurrentUser().getRatedMovies().add(ratedMovie);
+                currentPage.getCurrentUser().getRatedMovies().get(currentPage.getCurrentUser().getRatedMovies().size() - 1).setNumRatings(currentPage.getCurrentUser().getRatedMovies().get(currentPage.getCurrentUser().getRatedMovies().size() - 1).getNumRatings() + 1);
+                currentPage.getCurrentUser().getRatedMovies().get(currentPage.getCurrentUser().getRatedMovies().size() - 1).getMovieRatings().add(action.getRate());
+                Write.writeFilmDetails(currentPage.getCurrentUser(), ratedMovie, action, output);
             } else {
                 action.setError("Error");
-                currentPage.setCurrentUser(null);
-                Write.writePageError(currentPage.getCurrentUser(), action, output);
+                Write.writePageError(null, action, output);
             }
         }
     }

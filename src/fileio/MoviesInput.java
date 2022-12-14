@@ -89,34 +89,61 @@ public class MoviesInput {
 
     public ArrayList<MoviesInput> filer(ArrayList<MoviesInput> movies, UsersInput currentUser, ActionsInput action) {
         ArrayList<MoviesInput> allowedMovies = allowedMoviesForASpecificUser(movies, currentUser);
-        ArrayList<MoviesInput> filteredMovies = allowedMoviesForASpecificUser(movies, currentUser);
 
-        if (action.getFilters().getContains() != null) {
-            if (action.getFilters().getContains().getActors() != null) {
-                allowedMovies.removeIf(movie -> !movie.getActors().contains(action.getFilters().getContains().getActors()));
-                filteredMovies.removeIf(movie -> movie.getActors().contains(action.getFilters().getContains().getActors()));
-            }
+        if (action.getFilters().getContains() != null && action.getFilters().getContains().getActors() != null) {
+            allowedMovies.removeIf(movie -> !movie.getActors().containsAll(action.getFilters().getContains().getActors()));
+        }
 
-            if (action.getFilters().getContains().getGenres() != null) {
-                allowedMovies.removeIf(movie -> !movie.getGenres().contains(action.getFilters().getContains().getGenres()));
-                filteredMovies.removeIf(movie -> movie.getGenres().contains(action.getFilters().getContains().getGenres()));
-            }
+        if (action.getFilters().getContains() != null && action.getFilters().getContains().getGenres() != null) {
+            allowedMovies.removeIf(movie -> !movie.getGenres().containsAll(action.getFilters().getContains().getGenres()));
         }
 
         if (action.getFilters().getSort() != null) {
-            if (action.getFilters().getSort().getRating() != null) {
-                Collections.sort(filteredMovies, Comparator.comparing(MoviesInput::getRating).reversed());
-                if (allowedMovies.equals(filteredMovies) && action.getFilters().getSort().getDuration() != null) {
-                    Collections.sort(filteredMovies, Comparator.comparing(MoviesInput::getDuration).reversed());
+            if (action.getFilters().getSort().getDuration() != null) {
+                if (action.getFilters().getSort().getDuration().equals("increasing")) {
+                    Collections.sort(allowedMovies, Comparator.comparing(MoviesInput::getDuration));
+                } else {
+                    Collections.sort(allowedMovies, Comparator.comparing(MoviesInput::getDuration).reversed());
+                }
+                if (action.getFilters().getSort().getRating() != null) {
+                    if (action.getFilters().getSort().getRating().equals("increasing")) {
+                        for (int i = 0; i < allowedMovies.size(); i++) {
+                            for (int j = i + 1; j < allowedMovies.size(); j++) {
+                                if (allowedMovies.get(i).getDuration() == allowedMovies.get(j).getDuration()) {
+                                    if (allowedMovies.get(i).getRating() > allowedMovies.get(j).getRating()) {
+                                        Collections.swap(allowedMovies, i, j);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        for (int i = 0; i < allowedMovies.size(); i++) {
+                            for (int j = i + 1; j < allowedMovies.size(); j++) {
+                                if (allowedMovies.get(i).getDuration() == allowedMovies.get(j).getDuration()) {
+                                    if (allowedMovies.get(i).getRating() < allowedMovies.get(j).getRating()) {
+                                        Collections.swap(allowedMovies, i, j);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (action.getFilters().getSort().getRating() != null) {
+                    if (action.getFilters().getSort().getRating().equals("increasing")) {
+                        Collections.sort(allowedMovies, Comparator.comparing(MoviesInput::getRating));
+                    } else {
+                        Collections.sort(allowedMovies, Comparator.comparing(MoviesInput::getRating).reversed());
+                    }
                 }
             }
         }
-        return filteredMovies;
+        return allowedMovies;
     }
 
     public MoviesInput isInList(ArrayList<MoviesInput> purchasedMovies, String movie) {
         for (MoviesInput purchasedMovie : purchasedMovies) {
-            if (purchasedMovie.getName().equals(movie)) {
+            if (purchasedMovie != null && purchasedMovie.getName().equals(movie)) {
                 return purchasedMovie;
             }
         }
