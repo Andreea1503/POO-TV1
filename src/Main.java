@@ -21,7 +21,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Input input = objectMapper.readValue(new File(args[0]), Input.class);
-//        Input input = objectMapper.readValue(new File("C:\\Users\\Andreea\\Desktop\\tema2POO\\oop-asignments-master\\proiect1\\checker\\resources\\in\\basic_6.json"), Input.class);
+//        Input input = objectMapper.readValue(new File("C:\\Users\\Andreea\\Desktop\\tema2POO\\oop-asignments-master\\proiect1\\checker\\resources\\in\\basic_10.json"), Input.class);
 
         ArrayNode output = objectMapper.createArrayNode();
         Database database = Database.getInstance();
@@ -29,6 +29,6 @@ public class Main {
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(args[1]), output);
-//        objectWriter.writeValue(new File("C:\\Users\\Andreea\\Desktop\\tema2POO\\oop-asignments-master\\proiect1\\checker\\resources\\out\\out_6.json"), output);
+//        objectWriter.writeValue(new File("C:\\Users\\Andreea\\Desktop\\tema2POO\\oop-asignments-master\\proiect1\\checker\\resources\\out\\out_10.json"), output);
     }
 }

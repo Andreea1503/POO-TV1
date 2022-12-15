@@ -9,7 +9,10 @@ import java.util.ArrayList;
 
 public class Database {
     private static volatile Database instance;
+    Page currentPage;
+
     private Database() {
+        currentPage = new Page();
     }
 
     public static Database getInstance() {
@@ -25,8 +28,16 @@ public class Database {
         return result;
     }
 
+    public Page getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(Page currentPage) {
+        this.currentPage = currentPage;
+    }
+
     public void databaseNavigation(ArrayList<ActionsInput> actions, ArrayList<UsersInput> users, ArrayList<MoviesInput> movies, ArrayNode output) {
-        Page currentPage = new Page("Homepage neautentificat");
+        currentPage.setCurrentPageName("Homepage neautentificat");
 
         for (ActionsInput action : actions) {
             action.setError(null);

@@ -10,14 +10,8 @@ public class Page {
 
     private String currentPageName;
     private UsersInput currentUser;
-
+    private ActionsInput action;
     public Page() {
-
-    }
-
-    public Page(String currentPageName) {
-        this.currentPageName = currentPageName;
-        this.currentUser = null;
     }
 
     public String getCurrentPageName() {
@@ -35,6 +29,15 @@ public class Page {
     public void setCurrentUser(UsersInput currentUser) {
         this.currentUser = currentUser;
     }
+
+    public ActionsInput getAction() {
+        return action;
+    }
+
+    public void setAction(ActionsInput action) {
+        this.action = action;
+    }
+
 
     public void onPageAction(ArrayList<UsersInput> users, ActionsInput action, Page currentPage, ArrayList<MoviesInput> movies, ArrayNode output) {
         switch (action.getFeature()) {
@@ -91,7 +94,7 @@ public class Page {
             }
             case "movies" -> {
                 if ((currentPage.getCurrentPageName().equals("Homepage autentificat") || currentPage.getCurrentPageName().equals("see details")
-                    || currentPage.getCurrentPageName().equals("upgrades")) && currentPage.getCurrentUser() != null) {
+                        || currentPage.getCurrentPageName().equals("upgrades")) && currentPage.getCurrentUser() != null) {
                     currentPage.setCurrentPageName("movies");
                     action.setError(null);
                     MoviesInput movie = new MoviesInput();
@@ -105,20 +108,25 @@ public class Page {
             case "see details" -> {
                 if (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("see details")) {
                     currentPage.setCurrentPageName("see details");
-                    MoviesInput movie = new MoviesInput();
-                    ArrayList<MoviesInput> allowedMovies = movie.allowedMoviesForASpecificUser(movies, currentPage.getCurrentUser());
-                    MoviesInput allowedMovie = seeDetails(action, currentPage, output, allowedMovies);
-                    currentPage.getCurrentUser().setCurrentMoviesList(new ArrayList<>());
-                    currentPage.getCurrentUser().getCurrentMoviesList().add(allowedMovie);
+                    MoviesInput allowedMovie = seeDetails(action, currentPage.getCurrentUser().getCurrentMoviesList());
 
                     if (allowedMovie != null) {
+                        currentPage.getCurrentUser().setCurrentMoviesList(new ArrayList<>());
+                        currentPage.setAction(action);
+                        currentPage.getCurrentUser().getCurrentMoviesList().add(allowedMovie);
                         Write.writeFilmDetails(currentPage.getCurrentUser(), allowedMovie, action, output);
                     } else {
                         action.setError("Error");
+                        currentPage.setAction(action);
+                        MoviesInput movie = new MoviesInput();
+                        currentPage.getCurrentUser().setCurrentMoviesList(movie.allowedMoviesForASpecificUser(movies, currentPage.getCurrentUser()));
                         Write.writePageError(null, action, output);
                     }
                 } else {
                     action.setError("Error");
+                    currentPage.setAction(action);
+                    MoviesInput movie = new MoviesInput();
+                    currentPage.getCurrentUser().setCurrentMoviesList(movie.allowedMoviesForASpecificUser(movies, currentPage.getCurrentUser()));
                     Write.writePageError(null, action, output);
                 }
             }
@@ -132,7 +140,7 @@ public class Page {
             }
             case "logout" -> {
                 if (currentPage.getCurrentPageName().equals("login") || currentPage.getCurrentPageName().equals("register")
-                    || currentPage.getCurrentPageName().equals("Homepage neautentificat")) {
+                        || currentPage.getCurrentPageName().equals("Homepage neautentificat")) {
                     action.setError("Error");
                     Write.writePageError(null, action, output);
                 } else {
@@ -194,6 +202,7 @@ public class Page {
     public void searchIntoTheDatabase(ActionsInput action, Page currentPage, ArrayNode output, ArrayList<MoviesInput> movies) {
         if (currentPage.getCurrentPageName().equals("movies")) {
             action.setError(null);
+            currentPage.getCurrentUser().setCurrentMoviesList(Write.searchMovie(action, currentPage.getCurrentUser()));
             Write.writeSearchError(movies, action, currentPage.getCurrentUser(), output);
         } else {
             action.setError("Error");
@@ -202,10 +211,10 @@ public class Page {
     }
 
     public void filterIntoTheDatabase(ActionsInput action, Page currentPage, ArrayNode output, ArrayList<MoviesInput> movies) {
-        if (currentPage.getCurrentPageName().equals("movies")) {
+        if (currentPage.getCurrentPageName().equals("movies") || currentPage.getCurrentPageName().equals("see details")) {
             action.setError(null);
             MoviesInput movie = new MoviesInput();
-            ArrayList<MoviesInput> filteredMovies = movie.filer(movies, currentPage.getCurrentUser(), action);
+            ArrayList<MoviesInput> filteredMovies = movie.filter(movies, currentPage.getCurrentUser(), action);
             if (filteredMovies != null) {
                 currentPage.getCurrentUser().setCurrentMoviesList(filteredMovies);
             }
@@ -216,7 +225,7 @@ public class Page {
         }
     }
 
-    public MoviesInput seeDetails(ActionsInput action, Page currentPage, ArrayNode output, ArrayList<MoviesInput> movies) {
+    public MoviesInput seeDetails(ActionsInput action, ArrayList<MoviesInput> movies) {
         for (MoviesInput movie : movies) {
             if (movie != null) {
                 if (action.getMovie().equals(movie.getName())) {
@@ -227,7 +236,6 @@ public class Page {
         return null;
     }
 
-    // mai scriem si noi cu write?
     public void buyTokens(ActionsInput action, Page currentPage, ArrayNode output) {
         if (currentPage.getCurrentPageName().equals("upgrades")) {
             int balance = Integer.valueOf(currentPage.getCurrentUser().getCredentials().getBalance());
@@ -251,7 +259,7 @@ public class Page {
     }
 
     public void purchase(ActionsInput action, Page currentPage, ArrayNode output) {
-        if (currentPage.getCurrentUser().getCurrentMoviesList().get(0) != null && currentPage.getCurrentPageName().equals("see details")) {
+        if (currentPage.getCurrentUser().getCurrentMoviesList() != null && currentPage.getCurrentPageName().equals("see details")) {
             MoviesInput purchasedMovies = purchaseMovieOnAccount(action, currentPage, output);
             if (purchasedMovies != null) {
                 Write.writeFilmDetails(currentPage.getCurrentUser(), purchasedMovies, action, output);
@@ -266,11 +274,11 @@ public class Page {
     }
 
     public MoviesInput purchaseMovieOnAccount(ActionsInput action, Page currentPage, ArrayNode output) {
-        MoviesInput purchasedMovie = currentPage.getCurrentUser().getCurrentMoviesList().get(0);
-        if (currentPage.getCurrentUser().getCredentials().getAccountType().equals("premium") && currentPage.getCurrentUser().getNumFreePremiumVideos() > 0) {
+        MoviesInput purchasedMovie = seeDetails(currentPage.getAction(), currentPage.getCurrentUser().getCurrentMoviesList());
+        if (purchasedMovie != null && currentPage.getCurrentUser().getCredentials().getAccountType().equals("premium") && currentPage.getCurrentUser().getNumFreePremiumVideos() > 0) {
             currentPage.getCurrentUser().setNumFreePremiumVideos(currentPage.getCurrentUser().getNumFreePremiumVideos() - 1);
             currentPage.getCurrentUser().getPurchasedMovies().add(purchasedMovie);
-        } else if (currentPage.getCurrentUser().getCredentials().getAccountType().equals("standard") || currentPage.getCurrentUser().getNumFreePremiumVideos() == 0) {
+        } else if (purchasedMovie != null && (currentPage.getCurrentUser().getCredentials().getAccountType().equals("standard") || currentPage.getCurrentUser().getNumFreePremiumVideos() == 0)) {
             currentPage.getCurrentUser().setTokensCount(currentPage.getCurrentUser().getTokensCount() - 2);
             currentPage.getCurrentUser().getPurchasedMovies().add(purchasedMovie);
         }
@@ -279,7 +287,7 @@ public class Page {
 
     public void watch(ActionsInput action, Page currentPage, ArrayNode output) {
         if (currentPage.getCurrentUser() != null) {
-            MoviesInput purchasedMovie = currentPage.getCurrentUser().getCurrentMoviesList().get(0);
+            MoviesInput purchasedMovie = seeDetails(currentPage.getAction(), currentPage.getCurrentUser().getCurrentMoviesList());
 
             if (purchasedMovie == null) {
                 action.setError("Error");
@@ -304,7 +312,7 @@ public class Page {
 
     public void like(ActionsInput action, Page currentPage, ArrayNode output) {
         if (currentPage.getCurrentUser() != null) {
-            MoviesInput watchedMovie = currentPage.getCurrentUser().getCurrentMoviesList().get(0);
+            MoviesInput watchedMovie = seeDetails(currentPage.getAction(), currentPage.getCurrentUser().getCurrentMoviesList());
 
             if (watchedMovie == null) {
                 action.setError("Error");
@@ -331,7 +339,7 @@ public class Page {
 
     public void rate(ActionsInput action, Page currentPage, ArrayNode output) {
         if (currentPage.getCurrentUser() != null) {
-            MoviesInput watchedMovie = currentPage.getCurrentUser().getCurrentMoviesList().get(0);
+            MoviesInput watchedMovie = seeDetails(currentPage.getAction(), currentPage.getCurrentUser().getCurrentMoviesList());
 
             if (watchedMovie == null) {
                 action.setError("Error");

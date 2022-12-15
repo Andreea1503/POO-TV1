@@ -87,15 +87,29 @@ public class MoviesInput {
         return allowedMovies;
     }
 
-    public ArrayList<MoviesInput> filer(ArrayList<MoviesInput> movies, UsersInput currentUser, ActionsInput action) {
-        ArrayList<MoviesInput> allowedMovies = allowedMoviesForASpecificUser(movies, currentUser);
+    public ArrayList<MoviesInput> filter(ArrayList<MoviesInput> movies, UsersInput currentUser, ActionsInput action) {
+        ArrayList<MoviesInput> allowedMovies = new ArrayList<>(allowedMoviesForASpecificUser(movies, currentUser));
 
         if (action.getFilters().getContains() != null && action.getFilters().getContains().getActors() != null) {
-            allowedMovies.removeIf(movie -> !movie.getActors().containsAll(action.getFilters().getContains().getActors()));
+            for (int i = 0; i < allowedMovies.size(); i++) {
+                for (int j = 0; j < action.getFilters().getContains().getActors().size(); j++) {
+                    if (!allowedMovies.get(i).getActors().contains(action.getFilters().getContains().getActors().get(j))) {
+                        allowedMovies.remove(i);
+                        i--;
+                    }
+                }
+            }
         }
 
-        if (action.getFilters().getContains() != null && action.getFilters().getContains().getGenres() != null) {
-            allowedMovies.removeIf(movie -> !movie.getGenres().containsAll(action.getFilters().getContains().getGenres()));
+        if (action.getFilters().getContains() != null && action.getFilters().getContains().getGenre() != null) {
+           for (int i = 0; i < allowedMovies.size(); i++) {
+               for (int j = 0; j < action.getFilters().getContains().getGenre().size(); j++) {
+                   if (!allowedMovies.get(i).getGenres().contains(action.getFilters().getContains().getGenre().get(j))) {
+                       allowedMovies.remove(i);
+                       i--;
+                   }
+               }
+           }
         }
 
         if (action.getFilters().getSort() != null) {

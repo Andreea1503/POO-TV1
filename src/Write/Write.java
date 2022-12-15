@@ -141,11 +141,7 @@ public class Write {
         output.add(loginError);
     }
 
-    public static void writeSearchError(ArrayList<MoviesInput> movies, ActionsInput action, UsersInput currentUser, ArrayNode output) {
-        ObjectNode loginError = objectMapper.createObjectNode();
-
-        loginError.put("error", action.getError());
-
+    public static ArrayList<MoviesInput> searchMovie(ActionsInput action, UsersInput currentUser) {
         ArrayList<MoviesInput> searchMovies = new ArrayList<>(currentUser.getCurrentMoviesList());
 
         for (int i = 0; i < searchMovies.size(); i++) {
@@ -155,9 +151,16 @@ public class Write {
                 i--;
             }
         }
+        return searchMovies;
+    }
+    public static void writeSearchError(ArrayList<MoviesInput> movies, ActionsInput action, UsersInput currentUser, ArrayNode output) {
+        ObjectNode loginError = objectMapper.createObjectNode();
+
+        loginError.put("error", action.getError());
+
 
         ArrayNode moviesOutput = objectMapper.createArrayNode();
-        moviesOutput = movieList(searchMovies);
+        moviesOutput = movieList(searchMovie(action, currentUser));
 
         loginError.set("currentMoviesList", moviesOutput);
 

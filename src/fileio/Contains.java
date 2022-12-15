@@ -6,11 +6,11 @@ import java.util.ArrayList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Contains {
     private ArrayList<String> actors;
-    private ArrayList<String> genres;
+    private ArrayList<String> genre;
 
     public Contains() {
         actors = null;
-        genres = null;
+        genre = null;
     }
 
     public ArrayList<String> getActors() {
@@ -21,11 +21,11 @@ public class Contains {
         this.actors = actors;
     }
 
-    public ArrayList<String> getGenres() {
-        return genres;
+    public ArrayList<String> getGenre() {
+        return genre;
     }
 
-    public void setGenres(ArrayList<String> genre) {
-        this.genres= genre;
+    public void setGenre(ArrayList<String> genre) {
+        this.genre= genre;
     }
 }

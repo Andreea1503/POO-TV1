@@ -15,6 +15,8 @@ public class UsersInput {
     private ArrayList<MoviesInput> ratedMovies = null;
     private ArrayList<MoviesInput> currentMoviesList = null;
 
+    private ArrayList<MoviesInput> filteredMovies = null;
+
     public UsersInput() {
     }
 
@@ -27,6 +29,8 @@ public class UsersInput {
         this.likedMovies = new ArrayList<>();
         this.ratedMovies = new ArrayList<>();
         this.currentMoviesList = new ArrayList<>();
+        this.filteredMovies = new ArrayList<>();
+
     }
     public CredentialsInput getCredentials() {
         return credentials;
@@ -90,6 +94,14 @@ public class UsersInput {
 
     public void setCurrentMoviesList(ArrayList<MoviesInput> currentMoviesList) {
         this.currentMoviesList = currentMoviesList;
+    }
+
+    public ArrayList<MoviesInput> getFilteredMovies() {
+        return filteredMovies;
+    }
+
+    public void setFilteredMovies(ArrayList<MoviesInput> filteredMovies) {
+        this.filteredMovies = filteredMovies;
     }
     @Override
     public String toString() {
