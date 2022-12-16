@@ -91,25 +91,11 @@ public class MoviesInput {
         ArrayList<MoviesInput> allowedMovies = new ArrayList<>(allowedMoviesForASpecificUser(movies, currentUser));
 
         if (action.getFilters().getContains() != null && action.getFilters().getContains().getActors() != null) {
-            for (int i = 0; i < allowedMovies.size(); i++) {
-                for (int j = 0; j < action.getFilters().getContains().getActors().size(); j++) {
-                    if (!allowedMovies.get(i).getActors().contains(action.getFilters().getContains().getActors().get(j))) {
-                        allowedMovies.remove(i);
-                        i--;
-                    }
-                }
-            }
+            filterByActors(allowedMovies, action);
         }
 
         if (action.getFilters().getContains() != null && action.getFilters().getContains().getGenre() != null) {
-           for (int i = 0; i < allowedMovies.size(); i++) {
-               for (int j = 0; j < action.getFilters().getContains().getGenre().size(); j++) {
-                   if (!allowedMovies.get(i).getGenres().contains(action.getFilters().getContains().getGenre().get(j))) {
-                       allowedMovies.remove(i);
-                       i--;
-                   }
-               }
-           }
+            filterByGenre(allowedMovies, action);
         }
 
         if (action.getFilters().getSort() != null) {
@@ -155,10 +141,34 @@ public class MoviesInput {
         return allowedMovies;
     }
 
-    public MoviesInput isInList(ArrayList<MoviesInput> purchasedMovies, String movie) {
-        for (MoviesInput purchasedMovie : purchasedMovies) {
-            if (purchasedMovie != null && purchasedMovie.getName().equals(movie)) {
-                return purchasedMovie;
+    private ArrayList<MoviesInput> filterByActors(ArrayList<MoviesInput> movies, ActionsInput action) {
+        for (int i = 0; i < movies.size(); i++) {
+            for (int j = 0; j < action.getFilters().getContains().getActors().size(); j++) {
+                if (!movies.get(i).getActors().contains(action.getFilters().getContains().getActors().get(j))) {
+                    movies.remove(i);
+                    i--;
+                }
+            }
+        }
+        return movies;
+    }
+
+    private ArrayList<MoviesInput> filterByGenre(ArrayList<MoviesInput> movies, ActionsInput action) {
+        for (int i = 0; i < movies.size(); i++) {
+            for (int j = 0; j < action.getFilters().getContains().getGenre().size(); j++) {
+                if (!movies.get(i).getGenres().contains(action.getFilters().getContains().getGenre().get(j))) {
+                    movies.remove(i);
+                    i--;
+                }
+            }
+        }
+        return movies;
+    }
+
+    public MoviesInput isInList(ArrayList<MoviesInput> movies, String movieName) {
+        for (MoviesInput movie : movies) {
+            if (movie != null && movie.getName().equals(movieName)) {
+                return movie;
             }
         }
         return null;
@@ -174,6 +184,30 @@ public class MoviesInput {
             return (double) rating / movie.getNumRatings();
         }
         return 0.0;
+    }
+
+    public static ArrayList<MoviesInput> searchMovie(ActionsInput action, UsersInput currentUser) {
+        ArrayList<MoviesInput> searchMovies = new ArrayList<>(currentUser.getCurrentMoviesList());
+
+        for (int i = 0; i < searchMovies.size(); i++) {
+            String title = action.getStartsWith();
+            if (!searchMovies.get(i).getName().startsWith(title)) {
+                searchMovies.remove(i);
+                i--;
+            }
+        }
+        return searchMovies;
+    }
+
+    public static MoviesInput seeDetails(ActionsInput action, ArrayList<MoviesInput> movies) {
+        for (MoviesInput movie : movies) {
+            if (movie != null) {
+                if (action.getMovie().equals(movie.getName())) {
+                    return movie;
+                }
+            }
+        }
+        return null;
     }
     public int getNumLikes() {
         return numLikes;

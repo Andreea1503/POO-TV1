@@ -32,17 +32,4 @@ public class Input {
     public void setActions(ArrayList<ActionsInput> actions) {
         this.actions = actions;
     }
-
-    @Override
-    public String toString() {
-        return "Input{"
-                + "users="
-                + users
-                + ", movies="
-                + movies
-                + ", action="
-                + actions
-                + '}';
-    }
-
 }

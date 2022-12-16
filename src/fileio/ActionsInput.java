@@ -107,20 +107,4 @@ public class ActionsInput {
     public void setRate(int rate) {
         this.rate = rate;
     }
-    @Override
-    public String toString() {
-        return "ActionsInput{"
-                + "command='"
-                + feature
-                + '\''
-                + ", type='"
-                + type
-                + '\''
-                + ", page='"
-                + page
-                + '\''
-                + ", credentials="
-                + credentials
-                + '}';
-    }
 }

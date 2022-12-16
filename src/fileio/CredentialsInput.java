@@ -49,25 +49,4 @@ public class CredentialsInput {
     public void setBalance(String balance) {
         this.balance = balance;
     }
-
-    @Override
-    public String toString() {
-        return "CredentialsInput{"
-                + "name='"
-                + name
-                + '\''
-                + ", password='"
-                + password
-                + '\''
-                + ", accountType='"
-                + accountType
-                + '\''
-                + ", country='"
-                + country
-                + '\''
-                + ", balance='"
-                + balance
-                + '\''
-                + '}';
-    }
 }

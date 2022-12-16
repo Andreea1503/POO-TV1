@@ -9,8 +9,6 @@ public class Contains {
     private ArrayList<String> genre;
 
     public Contains() {
-        actors = null;
-        genre = null;
     }
 
     public ArrayList<String> getActors() {

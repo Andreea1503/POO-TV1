@@ -1,5 +1,6 @@
 package fileio;
 
+import Database.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
@@ -9,13 +10,12 @@ public class UsersInput {
     private CredentialsInput credentials;
     private int tokensCount;
     private int numFreePremiumVideos;
-    private ArrayList<MoviesInput> purchasedMovies = null;
-    private ArrayList<MoviesInput> watchedMovies = null;
-    private ArrayList<MoviesInput> likedMovies = null;
-    private ArrayList<MoviesInput> ratedMovies = null;
-    private ArrayList<MoviesInput> currentMoviesList = null;
-
-    private ArrayList<MoviesInput> filteredMovies = null;
+    private ArrayList<MoviesInput> purchasedMovies;
+    private ArrayList<MoviesInput> watchedMovies;
+    private ArrayList<MoviesInput> likedMovies;
+    private ArrayList<MoviesInput> ratedMovies;
+    private ArrayList<MoviesInput> currentMoviesList;
+    private ArrayList<MoviesInput> filteredMovies;
 
     public UsersInput() {
     }
@@ -95,32 +95,4 @@ public class UsersInput {
     public void setCurrentMoviesList(ArrayList<MoviesInput> currentMoviesList) {
         this.currentMoviesList = currentMoviesList;
     }
-
-    public ArrayList<MoviesInput> getFilteredMovies() {
-        return filteredMovies;
-    }
-
-    public void setFilteredMovies(ArrayList<MoviesInput> filteredMovies) {
-        this.filteredMovies = filteredMovies;
-    }
-    @Override
-    public String toString() {
-        return "UsersInput{"
-                + "credentials="
-                + credentials
-                + ", tockensCount="
-                + tokensCount
-                + ", numFreePremiumVideos="
-                + numFreePremiumVideos
-                + ", purchasedMovies="
-                + purchasedMovies
-                + ", watchedMovies="
-                + watchedMovies
-                + ", likedMovies="
-                + likedMovies
-                + ", ratedMovies="
-                + ratedMovies
-                + '}';
-    }
-
 }

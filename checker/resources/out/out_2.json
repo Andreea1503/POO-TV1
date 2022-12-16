@@ -27,7 +27,7 @@
     "countriesBanned" : [ "Russia" ],
     "numLikes" : 0,
     "numRatings" : 0,
-    "rating" : 0
+    "rating" : 0.0
   }, {
     "name" : "Titanic",
     "year" : 2019,
@@ -37,7 +37,7 @@
     "countriesBanned" : [ "Russia" ],
     "numLikes" : 0,
     "numRatings" : 0,
-    "rating" : 0
+    "rating" : 0.0
   } ],
   "currentUser" : {
     "credentials" : {
