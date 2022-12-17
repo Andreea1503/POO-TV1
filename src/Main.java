@@ -1,8 +1,5 @@
-import java.util.*;
-
-import com.fasterxml.jackson.databind.util.IgnorePropertiesUtil;
-import fileio.*;
-import Database.*;
+import fileio.Input;
+import database.Database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -10,24 +7,28 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Objects;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
+public final class Main {
+    private Main() {
+    }
+
+    /**
+     * This is the entry point of the application, where the input is read from the input file and
+     * the output is written in the output file. The database singleton is instantiated here.
+     * @param args [0] = input file path
+     *             [1] = output file path
+     * @throws IOException in case of exceptions to reading / writing
+     */
+    public static void main(final String[] args) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Input input = objectMapper.readValue(new File(args[0]), Input.class);
-//        Input input = objectMapper.readValue(new File("C:\\Users\\Andreea\\Desktop\\tema2POO\\oop-asignments-master\\proiect1\\checker\\resources\\in\\basic_5.json"), Input.class);
 
         ArrayNode output = objectMapper.createArrayNode();
         Database database = Database.getInstance();
-        database.databaseNavigation(input.getActions(), input.getUsers(), input.getMovies(), output);
+        database.databaseNavigation(input.getActions(), input.getUsers(), input.getMovies(),
+                output);
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(args[1]), output);
-//        objectWriter.writeValue(new File("C:\\Users\\Andreea\\Desktop\\tema2POO\\oop-asignments-master\\proiect1\\checker\\resources\\out\\out_5.json"), output);
     }
 }

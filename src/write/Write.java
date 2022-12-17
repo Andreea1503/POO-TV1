@@ -1,4 +1,4 @@
-package Write;
+package write;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,15 +8,24 @@ import fileio.MoviesInput;
 import fileio.UsersInput;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
-public class Write {
-    public Write() {
+/**
+ * Class that contains the methods that write the output
+ */
+public final class Write {
+    private Write() {
     }
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void writePageError(UsersInput currentUser, ActionsInput action, ArrayNode output) {
+    /**
+     * Method that writes the output
+     * @param currentUser
+     * @param action
+     * @param output
+     */
+    public static void writePageError(final UsersInput currentUser, final ActionsInput action,
+                                      final ArrayNode output) {
         ObjectNode loginError = objectMapper.createObjectNode();
 
         loginError.put("error", action.getError());
@@ -38,7 +47,11 @@ public class Write {
         output.add(loginError);
     }
 
-    public static ArrayNode movieList(ArrayList<MoviesInput> currentMoviesList) {
+    /**
+     * Method that writes the movie list in the output
+     * @param currentMoviesList
+     */
+    public static ArrayNode movieList(final ArrayList<MoviesInput> currentMoviesList) {
         ArrayNode movies = objectMapper.createArrayNode();
 
         if (currentMoviesList != null) {
@@ -51,7 +64,11 @@ public class Write {
         return movies;
     }
 
-    public static ObjectNode movie(MoviesInput movie) {
+    /**
+     * Method that writes the movie in the output
+     * @param movie
+     */
+    public static ObjectNode movie(final MoviesInput movie) {
         ObjectNode movieOutput = objectMapper.createObjectNode();
 
         movieOutput.put("name", movie.getName());
@@ -85,7 +102,11 @@ public class Write {
         return movieOutput;
     }
 
-    public static ObjectNode user(UsersInput currentUser) {
+    /**
+     * Method that writes the user in the output
+     * @param currentUser
+     */
+    public static ObjectNode user(final UsersInput currentUser) {
         ObjectNode user = objectMapper.createObjectNode();
 
         ObjectNode credentials = objectMapper.createObjectNode();

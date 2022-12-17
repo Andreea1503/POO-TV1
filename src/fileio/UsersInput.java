@@ -1,10 +1,12 @@
 package fileio;
 
-import Database.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 
+/**
+ * Class that contains the users input
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UsersInput {
     private CredentialsInput credentials;
@@ -20,7 +22,7 @@ public class UsersInput {
     public UsersInput() {
     }
 
-    public UsersInput(CredentialsInput credentials) {
+    public UsersInput(final CredentialsInput credentials) {
         this.credentials = credentials;
         this.tokensCount = 0;
         this.numFreePremiumVideos = 15;
@@ -32,67 +34,132 @@ public class UsersInput {
         this.filteredMovies = new ArrayList<>();
 
     }
+
+    /**
+     * Method that returns the credentials of the user
+     * @return credentials
+     */
     public CredentialsInput getCredentials() {
         return credentials;
     }
 
-    public void setCredentials(CredentialsInput credentials) {
+    /**
+     * Method that sets the credentials of the user
+     * @param credentials
+     */
+    public void setCredentials(final CredentialsInput credentials) {
         this.credentials = credentials;
     }
 
+    /**
+     * Method that returns the number of tokens of the user
+     * @return tokensCount
+     */
     public int getTokensCount() {
         return tokensCount;
     }
 
-    public void setTokensCount(int tokensCount) {
+    /**
+     * Method that sets the number of tokens of the user
+     * @param tokensCount
+     */
+    public void setTokensCount(final int tokensCount) {
         this.tokensCount = tokensCount;
     }
 
+    /**
+     * Method that returns the number of free premium videos of the user
+     * @return numFreePremiumVideos
+     */
     public int getNumFreePremiumVideos() {
         return numFreePremiumVideos;
     }
 
-    public void setNumFreePremiumVideos(int numFreePremiumVideos) {
+    /**
+     * Method that sets the number of free premium videos of the user
+     * @param numFreePremiumVideos
+     */
+    public void setNumFreePremiumVideos(final int numFreePremiumVideos) {
         this.numFreePremiumVideos = numFreePremiumVideos;
     }
 
+    /**
+     * Method that returns the list of purchased movies of the user
+     * @return purchasedMovies
+     */
     public ArrayList<MoviesInput> getPurchasedMovies() {
         return purchasedMovies;
     }
 
-    public void setPurchasedMovies(ArrayList<MoviesInput> purchasedMovies) {
+    /**
+     * Method that sets the list of purchased movies of the user
+     * @param purchasedMovies
+     */
+    public void setPurchasedMovies(final ArrayList<MoviesInput> purchasedMovies) {
         this.purchasedMovies = purchasedMovies;
     }
 
+    /**
+     * Method that returns the list of watched movies of the user
+     * @return watchedMovies
+     */
     public ArrayList<MoviesInput> getWatchedMovies() {
         return watchedMovies;
     }
 
-    public void setWatchedMovies(ArrayList<MoviesInput> watchedMovies) {
+    /**
+     * Method that sets the list of watched movies of the user
+     * @param watchedMovies
+     */
+    public void setWatchedMovies(final ArrayList<MoviesInput> watchedMovies) {
         this.watchedMovies = watchedMovies;
     }
 
+    /**
+     * Method that returns the list of liked movies of the user
+     * @return likedMovies
+     */
     public ArrayList<MoviesInput> getLikedMovies() {
         return likedMovies;
     }
 
-    public void setLikedMovies(ArrayList<MoviesInput> likedMovies) {
+    /**
+     * Method that sets the list of liked movies of the user
+     * @param likedMovies
+     */
+    public void setLikedMovies(final ArrayList<MoviesInput> likedMovies) {
         this.likedMovies = likedMovies;
     }
 
+    /**
+     * Method that returns the list of rated movies of the user
+     * @return ratedMovies
+     */
     public ArrayList<MoviesInput> getRatedMovies() {
         return ratedMovies;
     }
 
-    public void setRatedMovies(ArrayList<MoviesInput> ratedMovies) {
+    /**
+     * Method that sets the list of rated movies of the user
+     * @param ratedMovies
+     */
+    public void setRatedMovies(final ArrayList<MoviesInput> ratedMovies) {
         this.ratedMovies = ratedMovies;
     }
 
+    /**
+     * Method that returns the list of current movies of the user
+     * @return currentMoviesList
+     */
     public ArrayList<MoviesInput> getCurrentMoviesList() {
         return currentMoviesList;
     }
 
-    public void setCurrentMoviesList(ArrayList<MoviesInput> currentMoviesList) {
+    /**
+     * Method that sets the list of current movies of the user
+     * @param currentMoviesList
+     */
+    public void setCurrentMoviesList(final ArrayList<MoviesInput> currentMoviesList) {
         this.currentMoviesList = currentMoviesList;
     }
 }
